@@ -51,7 +51,8 @@ export default defineConfig({
     },
   },
   server: {
-    port: 5173,
+    host: true,
+    port: 5174,
     proxy: {
       '/socket.io': {
         target: process.env['VITE_API_URL'] ?? 'http://localhost:3001',

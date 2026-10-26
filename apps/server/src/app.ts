@@ -53,15 +53,17 @@ export function createApp(): Application {
   });
 
   // -------------------------------------------------------------------------
-  // CORS — strict origin allowlist
+  // CORS — origin handling
   // -------------------------------------------------------------------------
   app.use((req: Request, res: Response, next: NextFunction) => {
     const origin = req.headers.origin;
-    if (origin && allowedOrigins.includes(origin)) {
-      res.setHeader('Access-Control-Allow-Origin', origin);
-      res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-      res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-      res.setHeader('Vary', 'Origin');
+    if (origin) {
+      if (allowedOrigins.includes('*') || allowedOrigins.includes(origin)) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+        res.setHeader('Vary', 'Origin');
+      }
     }
     if (req.method === 'OPTIONS') {
       res.sendStatus(204);

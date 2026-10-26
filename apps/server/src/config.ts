@@ -7,8 +7,8 @@ import { z } from 'zod';
 const ConfigSchema = z.object({
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   PORT: z.coerce.number().int().min(1).max(65535).default(3001),
-  /** Comma-separated allowed CORS origins. REQUIRED in production. */
-  ALLOWED_ORIGINS: z.string().default('http://localhost:5173'),
+  /** Comma-separated allowed CORS origins. In development, allow localhost and any localtunnel / LAN IPs */
+  ALLOWED_ORIGINS: z.string().default('*'),
   /** Max payload body size (express) */
   MAX_BODY_SIZE: z.string().default('200kb'),
   /** Pairing session TTL in seconds */
