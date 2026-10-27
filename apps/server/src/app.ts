@@ -4,7 +4,14 @@
 import express, { type Application, type Request, type Response, type NextFunction } from 'express';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
+import path from 'node:path';
+import fs from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { getAllowedOrigins, config } from './config.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const webDistPath = path.resolve(__dirname, '../../web/dist');
 
 export function createApp(): Application {
   const app = express();
@@ -22,24 +29,14 @@ export function createApp(): Application {
 
   app.use(
     helmet({
-      contentSecurityPolicy: {
-        directives: {
-          defaultSrc: ["'none'"],
-          connectSrc: [connectSrc],
-          frameSrc: ["'none'"],
-          frameAncestors: ["'none'"],
-          formAction: ["'none'"],
-        },
-      },
+      contentSecurityPolicy: false,
       hsts: {
-        maxAge: 63_072_000, // 2 years
+        maxAge: 63_072_000,
         includeSubDomains: true,
         preload: true,
       },
       referrerPolicy: { policy: 'no-referrer' },
       xContentTypeOptions: true,
-      crossOriginOpenerPolicy: { policy: 'same-origin' },
-      crossOriginResourcePolicy: { policy: 'same-origin' },
     }),
   );
 
@@ -106,9 +103,21 @@ export function createApp(): Application {
   );
 
   // -------------------------------------------------------------------------
-  // 404 / error handler
+  // Static Web App Frontend
   // -------------------------------------------------------------------------
-  app.use((_req: Request, res: Response) => {
+  if (fs.existsSync(webDistPath)) {
+    app.use(express.static(webDistPath));
+  }
+
+  // -------------------------------------------------------------------------
+  // 404 / SPA Fallback
+  // -------------------------------------------------------------------------
+  app.use((req: Request, res: Response) => {
+    const indexPath = path.join(webDistPath, 'index.html');
+    if (fs.existsSync(indexPath) && req.accepts('html')) {
+      res.sendFile(indexPath);
+      return;
+    }
     res.status(404).json({ error: 'Not found' });
   });
 

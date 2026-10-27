@@ -4,7 +4,7 @@ import type { ClientToServerEvents, ServerToClientEvents } from '@clipper/shared
 export type TypedSocket = Socket<ServerToClientEvents, ClientToServerEvents>;
 
 export function createSocket(auth?: { sessionId?: string; deviceToken?: string; role?: 'pc' | 'phone' }): TypedSocket {
-  const url = import.meta.env.VITE_API_URL || (window.location.port === '5173' || window.location.port === '5174' ? `http://${window.location.hostname}:3001` : window.location.origin);
+  const url = import.meta.env.VITE_API_URL || window.location.origin;
   
   return io(url, {
     auth: auth || {},
