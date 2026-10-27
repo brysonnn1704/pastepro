@@ -106,6 +106,12 @@ export function IPhoneScreen() {
       s.on('device:connected', (data) => {
         setSessionId(data.sessionId);
         setDeviceToken(data.deviceToken);
+        // Persist token in socket auth so automatic reconnect on un-minimize works seamlessly
+        s.auth = {
+          sessionId: data.sessionId,
+          deviceToken: data.deviceToken,
+          role: 'phone',
+        };
         setStatus('connected');
         setConfirmStep(false);
         showToast('Paired with PC successfully!', 'success');
@@ -121,13 +127,34 @@ export function IPhoneScreen() {
         showToast(err.message, 'error');
       });
 
+      // Handle visibility changes when user switches apps or minimizes browser on iOS
+      const handleVisibilityChange = () => {
+        if (document.visibilityState === 'visible') {
+          if (!s.connected) {
+            s.connect();
+          }
+        }
+      };
+
+      document.addEventListener('visibilitychange', handleVisibilityChange);
+      window.addEventListener('pageshow', handleVisibilityChange);
+
       s.connect();
+
+      cleanup = () => {
+        document.removeEventListener('visibilitychange', handleVisibilityChange);
+        window.removeEventListener('pageshow', handleVisibilityChange);
+        s.disconnect();
+      };
     }
 
-    init();
+    let cleanup: (() => void) | undefined;
+    init().then((fn) => {
+      // init completed
+    });
 
     return () => {
-      if (s) s.disconnect();
+      if (cleanup) cleanup();
     };
   }, []);
 

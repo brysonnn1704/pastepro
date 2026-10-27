@@ -131,6 +131,11 @@ export function PCScreen() {
         setDeviceToken(data.deviceToken);
         sessionStorage.setItem('clipper_pc_token', data.deviceToken);
         sessionStorage.setItem('clipper_session_id', data.sessionId);
+        s.auth = {
+          sessionId: data.sessionId,
+          deviceToken: data.deviceToken,
+          role: 'pc',
+        };
         setStatus('connected');
         setConfirmStep(false);
         showToast('iPhone connected securely', 'success');

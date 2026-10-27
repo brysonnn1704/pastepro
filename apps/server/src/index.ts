@@ -32,14 +32,14 @@ const io = new Server<ClientToServerEvents, ServerToClientEvents, InterServerEve
       methods: ['GET', 'POST'],
       credentials: false,
     },
-    // Connection state recovery — helps reconnect
+    // Connection state recovery — helps reconnect when phone is backgrounded
     connectionStateRecovery: {
-      maxDisconnectionDuration: 120_000, // 2 minutes
+      maxDisconnectionDuration: 10 * 60 * 1000, // 10 minutes
       skipMiddlewares: false,
     },
     transports: ['websocket', 'polling'],
     allowEIO3: false,
-    pingTimeout: 30_000,
+    pingTimeout: 60_000,
     pingInterval: 25_000,
   },
 );

@@ -11,8 +11,8 @@ export function createSocket(auth?: { sessionId?: string; deviceToken?: string; 
     transports: ['websocket', 'polling'],
     autoConnect: false,
     reconnection: true,
-    reconnectionAttempts: 10,
-    reconnectionDelay: 1000,
-    reconnectionDelayMax: 5000,
+    reconnectionAttempts: Infinity,
+    reconnectionDelay: 500,
+    reconnectionDelayMax: 3000,
   });
 }

@@ -404,15 +404,10 @@ export function registerSocketHandlers(socket: AppSocket, _io: AppServer): void 
     const session = store.removeSocket(socket.id);
     if (!session) return;
 
-    // If both sockets gone, clean up session after a grace period
-    if (!session.pcSocketId && !session.phoneSocketId) {
-      setTimeout(() => {
-        // Check again — might have reconnected
-        const s = store.getSession(session.sessionId);
-        if (s && !s.pcSocketId && !s.phoneSocketId) {
-          store.invalidateSession(session.sessionId);
-        }
-      }, 30_000);
-    }
+    // Connection state recovery handles brief blips, but if transport disconnects:
+    // We KEEP the session alive for the configured SESSION_IDLE_MINUTES (default 30 min)
+    // so the user can freely minimize Safari, switch to another app, and return
+    // without getting disconnected.
+    // The session is cleaned up by the idle sweeper or explicit session:disconnect.
   });
 }
