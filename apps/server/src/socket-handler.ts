@@ -107,7 +107,8 @@ export function setupSocketAuth(io: AppServer): void {
 // Event handlers
 // ---------------------------------------------------------------------------
 export function registerSocketHandlers(socket: AppSocket, _io: AppServer): void {
-  const ip = socket.handshake.address;
+  const forwarded = socket.handshake.headers?.['x-forwarded-for'];
+  const ip = (typeof forwarded === 'string' ? forwarded.split(',')[0]?.trim() : null) || socket.handshake.address;
 
   // -------------------------------------------------------------------------
   // pairing:create — PC requests a new pairing session

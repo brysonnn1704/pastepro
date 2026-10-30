@@ -87,10 +87,22 @@ export function PCScreen() {
       setSocket(s);
 
       s.on('connect', () => {
-        // Automatically request pairing
         s.emit('pairing:create', { pcPublicKey: pubSpki });
         setStatus('pairing');
       });
+
+      s.on('disconnect', () => {
+        setStatus('disconnected');
+      });
+
+      s.on('connect_error', () => {
+        setStatus('disconnected');
+      });
+
+      if (s.connected) {
+        s.emit('pairing:create', { pcPublicKey: pubSpki });
+        setStatus('pairing');
+      }
 
       s.on('pairing:created', async (data) => {
         setPairingId(data.pairingId);
@@ -240,6 +252,22 @@ export function PCScreen() {
     setDeviceToken(null);
   };
 
+  const requestNewPairing = async () => {
+    if (!socket) return;
+    if (!socket.connected) {
+      socket.connect();
+    }
+    let pub = pcPubSpki;
+    if (!pub && keyPair) {
+      pub = await exportPublicKey(keyPair.publicKey);
+      setPcPubSpki(pub);
+    }
+    if (pub) {
+      socket.emit('pairing:create', { pcPublicKey: pub });
+      setStatus('pairing');
+    }
+  };
+
   const handleDisconnect = () => {
     if (socket) {
       socket.emit('session:disconnect', { reason: 'user_request' });
@@ -319,7 +347,7 @@ export function PCScreen() {
       <main className="flex-1 max-w-6xl w-full mx-auto p-6 grid grid-cols-1 md:grid-cols-12 gap-6">
         {/* Left Side: Pairing / Security info */}
         <div className="md:col-span-5 flex flex-col gap-6">
-          {status === 'pairing' && !confirmStep && (
+          {status !== 'connected' && !confirmStep && (
             <div className="p-6 rounded-xl border border-default bg-surface-elevated flex flex-col items-center text-center">
               <h2 className="text-lg font-semibold text-primary mb-1">Pair your iPhone</h2>
               <p className="text-xs text-secondary mb-5">
@@ -327,11 +355,21 @@ export function PCScreen() {
               </p>
 
               {/* QR Panel */}
-              <div className="p-4 bg-white rounded-lg border border-default shadow-sm mb-4">
-                {qrDataUrl ? (
+              <div className="p-4 bg-white rounded-lg border border-default shadow-sm mb-4 min-h-[224px] min-w-[224px] flex items-center justify-center">
+                {status === 'expired' ? (
+                  <div className="w-52 h-52 flex flex-col items-center justify-center gap-3 text-secondary p-2">
+                    <span className="text-sm font-semibold text-warning">QR Code Expired</span>
+                    <Button variant="primary" size="sm" onClick={requestNewPairing}>
+                      Generate New QR
+                    </Button>
+                  </div>
+                ) : qrDataUrl ? (
                   <img src={qrDataUrl} alt="Pairing QR Code" className="w-52 h-52 block" />
                 ) : (
-                  <div className="w-52 h-52 bg-surface-overlay animate-pulse rounded" />
+                  <div className="w-52 h-52 flex flex-col items-center justify-center gap-2 text-secondary">
+                    <div className="w-8 h-8 border-2 border-accent border-t-transparent rounded-full animate-spin" />
+                    <span className="text-xs">Connecting to secure relay...</span>
+                  </div>
                 )}
               </div>
 
@@ -345,13 +383,19 @@ export function PCScreen() {
                 </div>
               </div>
 
-              {/* Countdown timer */}
-              <div className="text-xs text-secondary">
-                Expires in{' '}
-                <span className={`tabular-nums font-semibold ${timeLeft < 30 ? 'text-warning' : 'text-primary'}`}>
-                  {timeLeft}s
-                </span>
-              </div>
+              {/* Countdown timer / reconnect button */}
+              {status === 'pairing' ? (
+                <div className="text-xs text-secondary">
+                  Expires in{' '}
+                  <span className={`tabular-nums font-semibold ${timeLeft < 30 ? 'text-warning' : 'text-primary'}`}>
+                    {timeLeft}s
+                  </span>
+                </div>
+              ) : status === 'disconnected' ? (
+                <Button variant="secondary" size="sm" onClick={requestNewPairing}>
+                  Connect & Generate QR
+                </Button>
+              ) : null}
             </div>
           )}
 

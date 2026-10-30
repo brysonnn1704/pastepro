@@ -23,7 +23,7 @@ const ConfigSchema = z.object({
   MAX_TRANSFER_BYTES: z.coerce.number().int().min(1024).max(10_485_760).default(102_656), // 100KB + 256 crypto overhead
   /** Rate limit: pairing create per IP per window */
   RATE_LIMIT_PAIRING_WINDOW_MS: z.coerce.number().int().default(60_000),
-  RATE_LIMIT_PAIRING_MAX: z.coerce.number().int().default(5),
+  RATE_LIMIT_PAIRING_MAX: z.coerce.number().int().default(60),
   /** Rate limit: transfers per session per window */
   RATE_LIMIT_TRANSFER_WINDOW_MS: z.coerce.number().int().default(60_000),
   RATE_LIMIT_TRANSFER_MAX: z.coerce.number().int().default(60),
