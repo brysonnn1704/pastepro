@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: pastepro
+    name: brysonpaste
     env: node
     plan: free
     autoDeploy: true
