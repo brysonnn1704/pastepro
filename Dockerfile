@@ -40,4 +40,4 @@ EXPOSE 3001
 
 USER node
 
-CMD ["node", "apps/server/dist/apps/server/src/index.js"]
+CMD ["node", "apps/server/dist/bundle.js"]

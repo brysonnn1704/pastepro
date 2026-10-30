@@ -10,7 +10,7 @@
   "scripts": {
     "dev": "pnpm -r --parallel run dev",
     "build": "pnpm --filter @clipper/web build && pnpm --filter @clipper/server build",
-    "start": "pnpm --filter @clipper/server start",
+    "start": "node apps/server/dist/bundle.js",
     "typecheck": "pnpm -r run typecheck",
     "lint": "pnpm -r run lint",
     "test": "pnpm -r run test",
