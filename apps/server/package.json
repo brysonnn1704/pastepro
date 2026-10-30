@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "build": "tsc -p tsconfig.build.json",
-    "start": "node dist/apps/server/src/index.js",
+    "start": "tsx src/index.ts",
     "typecheck": "tsc --noEmit",
     "lint": "echo 'no lint configured'",
     "test": "vitest run",
@@ -19,6 +19,7 @@
     "helmet": "^8.3.0",
     "serve-static": "2.2.1",
     "socket.io": "^4.8.4",
+    "tsx": "^4.23.15",
     "zod": "^3.25.76"
   },
   "devDependencies": {
@@ -26,7 +27,6 @@
     "@types/node": "^22.20.5",
     "@types/supertest": "^6.0.3",
     "supertest": "^7.1.0",
-    "tsx": "^4.23.15",
     "typescript": "^5.8.3",
     "vitest": "^2.1.9"
   }

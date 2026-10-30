@@ -9,7 +9,8 @@
   "packageManager": "pnpm@10.33.2",
   "scripts": {
     "dev": "pnpm -r --parallel run dev",
-    "build": "pnpm -r run build",
+    "build": "pnpm --filter @clipper/web build && pnpm --filter @clipper/server build",
+    "start": "pnpm --filter @clipper/server start",
     "typecheck": "pnpm -r run typecheck",
     "lint": "pnpm -r run lint",
     "test": "pnpm -r run test",

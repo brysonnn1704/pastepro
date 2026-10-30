@@ -11,3 +11,5 @@ test-results
 .pnpm-store
 .turbo
 *.log
+cloudflared.exe
+*.exe
