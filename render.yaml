@@ -3,6 +3,7 @@ services:
     name: pastepro
     env: node
     plan: free
+    autoDeploy: true
     buildCommand: corepack enable && corepack prepare pnpm@10.33.2 --activate && pnpm install --frozen-lockfile && pnpm build
     startCommand: node apps/server/dist/bundle.js
     envVars:
