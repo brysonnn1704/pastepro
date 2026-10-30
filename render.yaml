@@ -3,7 +3,7 @@ services:
     name: pastepro
     env: node
     plan: free
-    buildCommand: pnpm install && pnpm build
+    buildCommand: npm install -g pnpm@10.33.2 && pnpm install && pnpm build
     startCommand: pnpm start
     envVars:
       - key: NODE_ENV

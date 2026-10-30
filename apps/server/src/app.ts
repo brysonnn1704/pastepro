@@ -11,7 +11,13 @@ import { getAllowedOrigins, config } from './config.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const webDistPath = path.resolve(__dirname, '../../web/dist');
+const webDistCandidates: string[] = [
+  path.resolve(process.cwd(), 'apps/web/dist'),
+  path.resolve(__dirname, '../../web/dist'),
+  path.resolve(__dirname, '../../../../apps/web/dist'),
+  path.resolve(process.cwd(), '../web/dist'),
+];
+const webDistPath: string = webDistCandidates.find((p) => fs.existsSync(p)) ?? webDistCandidates[0]!;
 
 export function createApp(): Application {
   const app = express();
