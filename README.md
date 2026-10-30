@@ -1,6 +1,8 @@
-# Clipper 📋🔒
+# PastePro 📋🔒
 
-> Private, end-to-end encrypted clipboard bridge between your iPhone and Windows PC. No accounts, no database, no third-party CDNs.
+> Private, end-to-end encrypted clipboard bridge between your iPhone and Windows PC.
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/brysonnn1704/pastepro)
 
 ---
 
