@@ -36,6 +36,9 @@ export function createApp(): Application {
   app.use(
     helmet({
       contentSecurityPolicy: false,
+      crossOriginOpenerPolicy: false,
+      crossOriginResourcePolicy: false,
+      originAgentCluster: false,
       hsts: {
         maxAge: 63_072_000,
         includeSubDomains: true,
@@ -46,11 +49,11 @@ export function createApp(): Application {
     }),
   );
 
-  // Permissions policy — camera allowed only for self (phone scanner), all else denied
+  // Permissions policy — camera allowed for self (phone scanner), all else denied
   app.use((_req: Request, res: Response, next: NextFunction) => {
     res.setHeader(
       'Permissions-Policy',
-      'camera=(), microphone=(), geolocation=(), payment=(), usb=()',
+      'camera=(self), microphone=(), geolocation=(), payment=(), usb=()',
     );
     next();
   });

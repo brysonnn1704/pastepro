@@ -63,6 +63,7 @@ export function IPhoneScreen() {
   // 1. Initialise Socket and Check for URL Fragment (#pair=id.key)
   useEffect(() => {
     let s: TypedSocket;
+    let cleanup: (() => void) | undefined;
 
     async function init() {
       const kp = await generateECDHKeyPair();
@@ -148,9 +149,8 @@ export function IPhoneScreen() {
       };
     }
 
-    let cleanup: (() => void) | undefined;
-    init().then((fn) => {
-      // init completed
+    init().catch((err) => {
+      console.error('Init error', err);
     });
 
     return () => {
@@ -173,9 +173,10 @@ export function IPhoneScreen() {
   const handleJoinWithCode = (codeStr: string) => {
     if (!socket || !phonePubSpki) return;
     setStatus('pairing');
+    const cleaned = codeStr.trim();
     // If the input was a full URL or fragment
-    if (codeStr.includes('#pair=')) {
-      const fragment = codeStr.split('#pair=')[1];
+    if (cleaned.includes('#pair=')) {
+      const fragment = cleaned.split('#pair=')[1];
       if (fragment) {
         const [pId, pcKey] = fragment.split('.');
         if (pId && pcKey) {
@@ -187,7 +188,13 @@ export function IPhoneScreen() {
       }
     }
 
-    showToast('Please scan the QR code for full E2EE key agreement', 'info');
+    if (cleaned.length >= 6) {
+      setPairingId(cleaned);
+      socket.emit('pairing:join', { pairingId: cleaned, phonePublicKey: phonePubSpki });
+      return;
+    }
+
+    showToast('Please enter the code or scan the QR code', 'info');
   };
 
   const handleConfirm = (confirmed: boolean) => {
@@ -316,7 +323,7 @@ export function IPhoneScreen() {
             <div className="w-full flex gap-2 mt-2">
               <input
                 type="text"
-                placeholder="Paste pairing URL..."
+                placeholder="Enter 8-digit code or URL..."
                 value={manualCode}
                 onChange={(e) => setManualCode(e.target.value)}
                 className="flex-1 px-3 py-2 text-xs bg-surface border border-default rounded-md text-primary"

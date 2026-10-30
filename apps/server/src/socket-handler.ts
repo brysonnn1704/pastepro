@@ -150,7 +150,7 @@ export function registerSocketHandlers(socket: AppSocket, _io: AppServer): void 
       return;
     }
 
-    const pairing = store.getPairing(parsed.data.pairingId);
+    const pairing = store.getPairing(parsed.data.pairingId) || store.getPairingByCode(parsed.data.pairingId);
 
     if (!pairing) {
       socket.emit('error', { code: 'PAIRING_NOT_FOUND', message: 'Pairing not found or expired.' });
@@ -197,7 +197,7 @@ export function registerSocketHandlers(socket: AppSocket, _io: AppServer): void 
       return;
     }
 
-    const pairing = store.getPairing(parsed.data.pairingId);
+    const pairing = store.getPairing(parsed.data.pairingId) || store.getPairingByCode(parsed.data.pairingId);
     if (!pairing) {
       socket.emit('error', { code: 'PAIRING_NOT_FOUND', message: 'Pairing not found.' });
       return;
